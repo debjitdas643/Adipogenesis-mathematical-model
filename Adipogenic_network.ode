@@ -1,0 +1,51 @@
+# ODE for only Adipogenic network
+ 
+#Components: PPARG mRNA, inactivated and activated PPARG protein,
+#CEBPA mRNA and protein, FABP4 mRNA and protein
+
+dmPPARG/dt = ksP*y*sf*sf1*sfP*sfP1 + sfP*sfP1*sf1*((sf*kP1*y*CEBPA**n)/((sf*kmP1*sfC)**n+CEBPA**n)) + sf1*sfP*sfP1*((sf*kP2*y*FABP4**n)/((sf*kmP2*sfF)**n+FABP4**n)) - kdmP*y*mPPARG
+
+dPPARGi/dt = ktP*y*mPPARG/(sfP1*sf1) + kinact*y*PPARGa - (k0*y + kact*y*stim)*PPARGi - kdP*y*PPARGi
+
+dPPARGa/dt = (k0*y + kact*y*stim)*PPARGi - kinact*y*PPARGa - kdP*y*PPARGa
+
+dmCEBPA/dt = sfC*sfC1*sf1*sf*bmCEBPA*y + sfC*sfC1*sf1*((sf*kC*y*PPARGa**n)/((sf*sfP*kmC)**n+PPARGa**n)) - kdmC*y*mCEBPA
+
+dCEBPA/dt = ktC*y*mCEBPA/(sf1*sfC1) - kdC*y*CEBPA
+
+dmFABP4/dt = sfF*bmFABP4*y*sf*sf1*sfF1 + sfF*sfF1*sf1*((sf*kF*y*PPARGa**n)/((sf*sfP*kmF)**n+PPARGa**n)) - kdmF*y*mFABP4
+
+dFABP4/dt = ktF*y*mFABP4/(sf1*sfF1) - kdF*y*FABP4
+
+
+
+
+# Parameters 
+# Scaling Factors
+#sf=Scale up all variables, sfi=scaling of individual species
+#sf1=scaling of mRNAs, sfi1=individual scaling of mRNA
+p stim=1e-6
+#stim is Stimulus: the bifurcation parameter
+p sf=1, sf1=0.1, sfP=1.2, sfC=0.25, sfF=0.2, sfP1=1.2, sfC1=4, sfF1=3
+p y=1 # rate regulatory parameter for adipogenic network
+p n=2
+p ksP=0.619, kP1=0.99, kmP1=6.5, kP2=1.21, kmP2=12.3, kdmP=0.9
+p ktP=0.5, k0=140, kact=20, kinact=4, kdP = 0.7
+p bmCEBPA = 0.016, kC=39.36, kmC=10, kdmC=0.1 
+p ktC=0.1, kdC=0.07
+p bmFABP4 = 0.01, kF=6.9, kmF=20, kdmF=0.006
+p ktF=0.15, kdF=0.11
+
+
+
+# Numerics
+
+@ TOTAL=5760,METH=Cvode,atol=1e-12,toler=1e-12,newt_tol=1e-12,BOUND=10000000000,dt=0.05
+
+# Numerical setting for AUTO
+
+@ Ntst=150000, Nmax=200000, NPr=500000, Ds=0.002, Dsmin=0.0001, Dsmax=0.005
+@ ParMin=-25, ParMax=25, NormMax=100000
+
+
+done

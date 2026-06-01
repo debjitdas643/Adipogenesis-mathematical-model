@@ -1,0 +1,45 @@
+# ODE for minimalistic Circadian network 
+
+#Circadian Network
+#Components: mPer, Per , Per-Cry complex, Bmal1-Clock complex(Bmal1), GC, mRev, Rev
+
+dBmal1/dt = (x*ksbmal1p*sfcirc)/(Jbmal1p+(PerCry/(sfcirc*Kmpercry))) + (x*ksbmal1r*sfcirc)/(Jbmal1r+(Rev/(sfcirc*sfrev*Kmrev)))- kdbmal1*x*Bmal1 
+
+dmPer/dt = bmper*x*sfcirc + ksmper*x*Bmal1 + kGC*x*GC - kdmper*x*mPer
+
+dPer/dt = ksper*x*mPer*sfper - ka*x*Per + kd*x*PerCry*sfper - kdper*x*Per - (kper*x*Per)/(J+q*(Per/(sfcirc*sfper))+r*(PerCry/sfcirc))
+
+dPerCry/dt = ka*x*(Per/sfper) - kd*x*PerCry - kdpercry*x*PerCry - (kpercry*x*PerCry)/(J+q*(Per/(sfcirc*sfper))+r*(PerCry/sfcirc))
+
+dGC/dt = x*bGC*sfcirc + (ksGC*x*sfcirc)/(JGC**m+(Per/(sfcirc*sfper*KmGC))**m) - kdGC*GC*x
+
+dmRev/dt = bmrev*x*sfcirc*sfrev1 + ksmrev*sfrev1*x*Bmal1 - kdmrev*x*mRev + sfrev1*krgc*x*GC
+
+dRev/dt = ksrev*x*sfcirc*sfrev*(mRev**h/((sfcirc*sfrev1*Jrev)**h+mRev**h)) - kdrev*x*sfcirc*sfrev*(Rev/((sfcirc*sfrev*Jdrev)+Rev)) 
+
+
+# Parameters 
+p ksbmal1p=0.06, Jbmal1p=2, Kmpercry=0.007, ksbmal1r=0.001, Jbmal1r=1, Kmrev=0.005, kdbmal1=0.0031
+# to plot bifurcation, run the ode file keeping ksbmal1p = 1e-6
+p bmper=0.1, ksmper=0.25, kGC=0.008, kdmper=0.25
+p ksper=0.2156, kdper=0.03, ka=0.1415, kd=0.004716, kper=3.2478 J=0.04
+p kpercry=0.003773, kdpercry=0.015, q=1, r=2.2
+p bGC=0.005, ksGC=0.015, JGC=1, KmGC=0.05, m=2, kdGC=0.01
+p bmrev=0.1, ksmrev=0.4, kdmrev=0.25, krgc=0.2
+p ksrev=0.1, Jrev=2, h=2, kdrev=0.35, Jdrev=5
+p sfper=10, x=0.728, sfcirc=1, sfrev=1.5, sfrev1=0.5
+
+
+
+
+# Numerics
+
+@ TOTAL=5760,METH=Cvode,atol=1e-12,toler=1e-12,newt_tol=1e-12,BOUND=10000000000,dt=0.05
+
+# Numerical setting for AUTO
+
+@ Ntst=150000, Nmax=200000, NPr=500000, Ds=0.002, Dsmin=0.0001, Dsmax=0.05
+@ ParMin=-25, ParMax=25, NormMax=100000
+
+
+done
